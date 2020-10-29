@@ -15,71 +15,194 @@ const render = require("./lib/htmlRenderer");
 const teamMembers = []
 const arrayId = []
 
+const managerQuestions = [
+    {
+        type: "input",
+        name: "managerName",
+        message: "What is your Manager's name",
+        validate: answer => {
+            if(answer !== "") {
+                return true
+            }
+
+            return "Please enter a valid name"
+        }
+    },
+    {
+        type: "input",
+        name: "managerId",
+        message: "What is your Manager's ID?",
+        validate: answer => {
+            if(answer !== "") {
+                return true
+            }
+
+            return "Please enter a valid ID"
+        }
+    },
+    {
+        type: "input",
+        name: "managerEmail",
+        message: "What is your Manager's email?",
+        validate: answer => {
+            if(answer !== "") {
+                return true
+            }
+
+            return "Please enter a valid email"
+        }
+    },
+    {
+        type: "input",
+        name: "officeNumber",
+        message: "What is your Manager's office number?",
+        validate: answer => {
+            if(answer !== "") {
+                return true
+            }
+
+            return "Please enter a valid office number"
+        }
+    }
+]
+
+var engineerQuestions = [
+    {
+        type: "input",
+        name: "engineerName",
+        message: "What is your engineer's name",
+        validate: answer => {
+            if(answer !== "") {
+                return true
+            }
+
+            return "Please enter a valid name"
+        }
+    },
+    {
+        type: "input",
+        name: "engineerId",
+        message: "What is your employee's ID?",
+        validate: answer => {
+            if(answer !== "") {
+                return true
+            }
+
+            return "Please enter a valid ID"
+        }
+    },
+    {
+        type: "input",
+        name: "engineerEmail",
+        message: "What is your employee's email?",
+        validate: answer => {
+            if(answer !== "") {
+                return true
+            }
+
+            return "Please enter a valid email"
+        }
+    },
+    {
+        type: "input",
+        name: "engineerGithub",
+        message: "What is your employee's Github?",
+        validate: answer => {
+            if(answer !== "") {
+                return true
+            }
+
+            return "Please enter a valid github"
+        }
+    }
+]
+
+var internQuestions = [
+    {
+        type: "input",
+        name: "internName",
+        message: "What is your Intern's name",
+        validate: answer => {
+            if(answer !== "") {
+                return true
+            }
+
+            return "Please enter a valid name"
+        }
+    },
+    {
+        type: "input",
+        name: "internId",
+        message: "What is your Intern's ID?",
+        validate: answer => {
+            if(answer !== "") {
+                return true
+            }
+
+            return "Please enter a valid ID"
+        }
+    },
+    {
+        type: "input",
+        name: "internEmail",
+        message: "What is your Intern's email?",
+        validate: answer => {
+            if(answer !== "") {
+                return true
+            }
+
+            return "Please enter a valid email"
+        }
+    },
+    {
+        type: "input",
+        name: "schoolName",
+        message: "What is your Intern's school name?",
+        validate: answer => {
+            if(answer !== "") {
+                return true
+            }
+
+            return "Please enter a valid school name"
+        }
+    }
+];
+
+
+
 function appMenu() {
+    createEngineer();
     function  createTeam(){
         // inquirer to ask which type of employee you want to create and runs the relevant function
     }
     function createManager() {
-
+        inquirer.prompt(managerQuestions).then(function(answers){
+            const manager = new Manager(answers.managerName, answers.managerId, answers.managerEmail, answers.officeNumber)
+            teamMembers.push(manager)
+            arrayId.push(answers.managerId);
+            createIntern();
+        });
     }
 
     function createEngineer() {
-        inquirer.prompt([
-            {
-                type: "input",
-                name: "engineerName",
-                message: "What is your engineer's name",
-                validate: answer => {
-                    if(answer !== "") {
-                        return true
-                    }
-
-                    return "Please enter a valid name"
-                }
-            },
-            {
-                type: "input",
-                name: "engineerId",
-                message: "What is your employee's ID?",
-                validate: answer => {
-                    if(answer !== "") {
-                        return true
-                    }
-
-                    return "Please enter a valid ID"
-                }
-            },
-            {
-                type: "input",
-                name: "engineerEmail",
-                message: "What is your employee's email?",
-                validate: answer => {
-                    if(answer !== "") {
-                        return true
-                    }
-
-                    return "Please enter a valid email"
-                }
-            },
-            {
-                type: "input",
-                name: "engineerGithub",
-                message: "What is your employee's Github?",
-                validate: answer => {
-                    if(answer !== "") {
-                        return true
-                    }
-
-                    return "Please enter a valid github"
-                }
-            }
-        ]).then(answers => {
+       inquirer.prompt(engineerQuestions).then(answers => {
             const engineer = new Engineer(answers.engineerName, answers.engineerId, answers.engineerEmail, answers.engineerGithub)
             teamMembers.push(engineer)
             arrayId.push(answers.engineerId)
+            createManager();
             // run a function here that creates the entire "team" prompting you to create another employee
         })
     }
+
+    function createIntern() {
+        inquirer.prompt(internQuestions).then(answers => {
+             const intern = new Intern(answers.internName, answers.internId, answers.internEmail, answers.schoolName)
+             teamMembers.push(intern)
+             arrayId.push(answers.internId)
+             buildTeam();
+             // run a function here that creates the entire "team" prompting you to create another employee
+         })
+     }
 
     function buildTeam() {
         // Create the output directory if the output path doesn't exist
