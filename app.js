@@ -9,11 +9,15 @@ const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
+const { doesNotMatch } = require("assert");
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
 const teamMembers = []
-const arrayId = []
+const arrayId = [];
+var countEngineers = 0;
+var countManagers = 0;
+var countInterns = 0;
 
 const managerQuestions = [
     {
@@ -168,10 +172,99 @@ var internQuestions = [
     }
 ];
 
+var numOfEachEmployees = [
+    {
+        type: "input",
+        name: "numOfEngineers",
+        message: "How many engineers do you have on your team?",
+        validate: function(answer) {
+            answer = parseInt(answer);
+            if(isNaN(answer)) {
+                return "You need to provide a number"
+            }
+            else{return true}
+        }
+    },
+    {
+        type: "input",
+        name: "numOfManagers",
+        message: "How many managers do you have on your team?",
+        validate: function(answer) {
+            answer = parseInt(answer);
+            if(isNaN(answer)) {
+                return "You need to provide a number"
+            }
+            else{return true}
+        }
+    },
+    {
+        type: "input",
+        name: "numOfInterns",
+        message: "How many interns do you have on your team?",
+        validate: function(answer) {
+            answer = parseInt(answer);
+            if(isNaN(answer)) {
+                return "You need to provide a number"
+            }
+            else{return true}
+        }
+    },
 
+];
 
-function appMenu() {
-    createEngineer();
+function test() {
+    var hello = "hello";
+    hello = parseInt(hello);
+    console.log(typeof hello);
+    console.log(hello);
+    if(hello == "NaN") {
+        console.log("not a number")
+    }
+    else {console.log("is a number")}
+    // if(typeof hello != "number") {
+    //     console.log("not a number")
+    // }
+    // else {console.log("this is a number")}
+    // console.log(typeof hello);
+    // console.log(typeof hello == "string");
+    // if(typeof hello == "string") {
+    //     console.log("this is a string")
+    // }
+    // else if(typeof hello == "number") {
+    //     console.log("this is a number");
+    // }
+    // console.log(typeof hello);
+}
+
+function numOfEmployees(){
+    inquirer.prompt(numOfEachEmployees).then(function(response) {
+        // console.log(response);
+        var numOfEngineers = response.numOfEngineers;
+        var numOfInterns = response.numOfInterns;
+        var numOfManagers = response.numOfManagers;
+
+        console.log(response.numOfEngineers);
+
+        // if(isNaN(response.numOfEngineers)) {
+        //     console.log("not a number")
+        // }
+        // else{console.log("this is a number")}
+
+        appMenu(numOfEngineers,numOfInterns,numOfManagers);
+    });
+}
+
+function appMenu(numOfEngineers, numOfInterns, numOfManagers) {
+    if(numOfEngineers > 0) {
+        createEngineer();
+    }
+    else if(numOfEngineers <= 0 && numOfManagers > 0) {
+        createManager();
+    }
+    else if (numOfEngineers <= 0 && numOfManagers <=0 && numOfInterns > 0) {
+        createIntern();
+    }
+    else {console.log("Your team has 0 people")}
     function  createTeam(){
         // inquirer to ask which type of employee you want to create and runs the relevant function
     }
@@ -180,16 +273,37 @@ function appMenu() {
             const manager = new Manager(answers.managerName, answers.managerId, answers.managerEmail, answers.officeNumber)
             teamMembers.push(manager)
             arrayId.push(answers.managerId);
-            createIntern();
+            countManagers++;
+
+            if(countManagers < numOfManagers) {
+                createManager();
+            }
+            else if(numOfInterns > 0) {
+                createIntern();
+            }
         });
     }
 
     function createEngineer() {
+        // console.log(Object.values(numOfEachEmployees[0].numOfEngineers));
        inquirer.prompt(engineerQuestions).then(answers => {
+        //    console.log(answers[0].name);
             const engineer = new Engineer(answers.engineerName, answers.engineerId, answers.engineerEmail, answers.engineerGithub)
-            teamMembers.push(engineer)
-            arrayId.push(answers.engineerId)
-            createManager();
+            teamMembers.push(engineer);
+            arrayId.push(answers.engineerId);
+            countEngineers++;
+
+            if(countEngineers < numOfEngineers) {
+                createEngineer();
+            }
+
+            else if(numOfManagers > 0) {
+                createManager();
+            }
+
+            // if(numOfManagers > 0) {
+            //     createManager();
+            // }
             // run a function here that creates the entire "team" prompting you to create another employee
         })
     }
@@ -199,7 +313,17 @@ function appMenu() {
              const intern = new Intern(answers.internName, answers.internId, answers.internEmail, answers.schoolName)
              teamMembers.push(intern)
              arrayId.push(answers.internId)
-             buildTeam();
+             countInterns++;
+
+             if(countInterns < numOfInterns) {
+                 createIntern();
+             }
+             else {
+                buildTeam();
+                console.log(typeof teamMembers);
+                console.log(teamMembers);
+                console.log(typeof countEngineers);
+             }
              // run a function here that creates the entire "team" prompting you to create another employee
          })
      }
@@ -215,7 +339,8 @@ function appMenu() {
       
 }
 
-appMenu()
+numOfEmployees();
+// test();
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
 // generate and return a block of HTML including templated divs for each employee!
