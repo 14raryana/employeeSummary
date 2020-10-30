@@ -4,6 +4,7 @@ const Intern = require("./lib/Intern");
 const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
+const questionsModule = require("./lib/Questions");
 
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
@@ -19,225 +20,12 @@ var countEngineers = 0;
 var countManagers = 0;
 var countInterns = 0;
 
-const managerQuestions = [
-    {
-        type: "input",
-        name: "managerName",
-        message: "What is your Manager's name",
-        validate: answer => {
-            if(answer !== "") {
-                return true
-            }
-
-            return "Please enter a valid name"
-        }
-    },
-    {
-        type: "input",
-        name: "managerId",
-        message: "What is your Manager's ID?",
-        validate: answer => {
-            if(answer !== "") {
-                return true
-            }
-
-            return "Please enter a valid ID"
-        }
-    },
-    {
-        type: "input",
-        name: "managerEmail",
-        message: "What is your Manager's email?",
-        validate: answer => {
-            if(answer !== "") {
-                return true
-            }
-
-            return "Please enter a valid email"
-        }
-    },
-    {
-        type: "input",
-        name: "officeNumber",
-        message: "What is your Manager's office number?",
-        validate: answer => {
-            if(answer !== "") {
-                return true
-            }
-
-            return "Please enter a valid office number"
-        }
-    }
-]
-
-var engineerQuestions = [
-    {
-        type: "input",
-        name: "engineerName",
-        message: "What is your engineer's name",
-        validate: answer => {
-            if(answer !== "") {
-                return true
-            }
-
-            return "Please enter a valid name"
-        }
-    },
-    {
-        type: "input",
-        name: "engineerId",
-        message: "What is your employee's ID?",
-        validate: answer => {
-            if(answer !== "") {
-                return true
-            }
-
-            return "Please enter a valid ID"
-        }
-    },
-    {
-        type: "input",
-        name: "engineerEmail",
-        message: "What is your employee's email?",
-        validate: answer => {
-            if(answer !== "") {
-                return true
-            }
-
-            return "Please enter a valid email"
-        }
-    },
-    {
-        type: "input",
-        name: "engineerGithub",
-        message: "What is your employee's Github?",
-        validate: answer => {
-            if(answer !== "") {
-                return true
-            }
-
-            return "Please enter a valid github"
-        }
-    }
-]
-
-var internQuestions = [
-    {
-        type: "input",
-        name: "internName",
-        message: "What is your Intern's name",
-        validate: answer => {
-            if(answer !== "") {
-                return true
-            }
-
-            return "Please enter a valid name"
-        }
-    },
-    {
-        type: "input",
-        name: "internId",
-        message: "What is your Intern's ID?",
-        validate: answer => {
-            if(answer !== "") {
-                return true
-            }
-
-            return "Please enter a valid ID"
-        }
-    },
-    {
-        type: "input",
-        name: "internEmail",
-        message: "What is your Intern's email?",
-        validate: answer => {
-            if(answer !== "") {
-                return true
-            }
-
-            return "Please enter a valid email"
-        }
-    },
-    {
-        type: "input",
-        name: "schoolName",
-        message: "What is your Intern's school name?",
-        validate: answer => {
-            if(answer !== "") {
-                return true
-            }
-
-            return "Please enter a valid school name"
-        }
-    }
-];
-
-var numOfEachEmployees = [
-    {
-        type: "input",
-        name: "numOfEngineers",
-        message: "How many engineers do you have on your team?",
-        validate: function(answer) {
-            answer = parseInt(answer);
-            if(isNaN(answer)) {
-                return "You need to provide a number"
-            }
-            else{return true}
-        }
-    },
-    {
-        type: "input",
-        name: "numOfManagers",
-        message: "How many managers do you have on your team?",
-        validate: function(answer) {
-            answer = parseInt(answer);
-            if(isNaN(answer)) {
-                return "You need to provide a number"
-            }
-            else{return true}
-        }
-    },
-    {
-        type: "input",
-        name: "numOfInterns",
-        message: "How many interns do you have on your team?",
-        validate: function(answer) {
-            answer = parseInt(answer);
-            if(isNaN(answer)) {
-                return "You need to provide a number"
-            }
-            else{return true}
-        }
-    },
-
-];
-
 function test() {
-    var hello = "hello";
-    hello = parseInt(hello);
-    console.log(typeof hello);
-    console.log(hello);
-    if(hello == "NaN") {
-        console.log("not a number")
-    }
-    else {console.log("is a number")}
-    // if(typeof hello != "number") {
-    //     console.log("not a number")
-    // }
-    // else {console.log("this is a number")}
-    // console.log(typeof hello);
-    // console.log(typeof hello == "string");
-    // if(typeof hello == "string") {
-    //     console.log("this is a string")
-    // }
-    // else if(typeof hello == "number") {
-    //     console.log("this is a number");
-    // }
-    // console.log(typeof hello);
+    inquirer.prompt(questionsModule.numOfEachEmployees);
 }
 
 function numOfEmployees(){
-    inquirer.prompt(numOfEachEmployees).then(function(response) {
+    inquirer.prompt(questionsModule.numOfEachEmployees).then(function(response) {
         // console.log(response);
         var numOfEngineers = response.numOfEngineers;
         var numOfInterns = response.numOfInterns;
@@ -269,7 +57,7 @@ function appMenu(numOfEngineers, numOfInterns, numOfManagers) {
         // inquirer to ask which type of employee you want to create and runs the relevant function
     }
     function createManager() {
-        inquirer.prompt(managerQuestions).then(function(answers){
+        inquirer.prompt(questionsModule.managerQuestions).then(function(answers){
             const manager = new Manager(answers.managerName, answers.managerId, answers.managerEmail, answers.officeNumber)
             teamMembers.push(manager)
             arrayId.push(answers.managerId);
@@ -281,12 +69,15 @@ function appMenu(numOfEngineers, numOfInterns, numOfManagers) {
             else if(numOfInterns > 0) {
                 createIntern();
             }
+            else if(numOfInterns <= 0) {
+                buildTeam();
+            }
         });
     }
 
     function createEngineer() {
         // console.log(Object.values(numOfEachEmployees[0].numOfEngineers));
-       inquirer.prompt(engineerQuestions).then(answers => {
+       inquirer.prompt(questionsModule.engineerQuestions).then(answers => {
         //    console.log(answers[0].name);
             const engineer = new Engineer(answers.engineerName, answers.engineerId, answers.engineerEmail, answers.engineerGithub)
             teamMembers.push(engineer);
@@ -301,15 +92,15 @@ function appMenu(numOfEngineers, numOfInterns, numOfManagers) {
                 createManager();
             }
 
-            // if(numOfManagers > 0) {
-            //     createManager();
-            // }
+            else if(numOfInterns <= 0 && numOfManagers <= 0) {
+                buildTeam();
+            }
             // run a function here that creates the entire "team" prompting you to create another employee
         })
     }
 
     function createIntern() {
-        inquirer.prompt(internQuestions).then(answers => {
+        inquirer.prompt(questionsModule.internQuestions).then(answers => {
              const intern = new Intern(answers.internName, answers.internId, answers.internEmail, answers.schoolName)
              teamMembers.push(intern)
              arrayId.push(answers.internId)
@@ -334,6 +125,7 @@ function appMenu(numOfEngineers, numOfInterns, numOfManagers) {
           fs.mkdirSync(OUTPUT_DIR)
         }
         fs.writeFileSync(outputPath, render(teamMembers), "utf-8");
+        console.log("File "+ outputPath +" is ready for you")
       }
 
       
